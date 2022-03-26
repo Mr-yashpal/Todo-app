@@ -1,0 +1,120 @@
+body{
+    /* background-color: rgb(223, 223, 248); */
+    background-image: linear-gradient(180deg, rgb(226, 240, 225),rgb(247, 243, 243));
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+}
+main{
+    width: 50vw;
+    border-radius: 51px;
+    margin: 6vh 0 10vh 0;
+    padding: 4vh 5vw 10vh 5vw;
+    background-color: rgb(170, 166, 166);
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+    font-size: 40px;
+}
+.inputTitle{
+    width: 420px;
+    height: 30px;
+    font-size: large;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+section{
+    width: 400px;
+    /* height: 250px; */
+    border:0px solid;
+    border-radius: 21px;
+    padding: 2vh 2vw 2vh 2vw;
+    background-color: white;
+    font-size: 25px;
+
+}
+#addTodo{
+    width:60px;
+    height:60px;
+    background-color: rgb(230, 156, 19);
+    border-radius: 100%;
+    border: 0ch;
+    margin-left: -20px;
+    font-size: 30px;
+}
+.iconDelet{
+    border: 0cm;
+    background-color: white;
+    cursor: pointer;
+}
+.iconEdit{
+    border: 0cm;
+    background-color: white;
+    cursor: pointer;
+}
+
+.iconDelet:hover{
+    color: rgb(233, 118, 118);
+}
+/* .iconDelet:active{
+    color: red;
+} */
+.iconEdit:hover{
+    color: rgb(140, 247, 181);
+}
+/* .iconEdit:active{
+    color: green;
+} */
+
+
+.list-icon{
+    width: 40px;
+}
+/* .padding{
+    padding-top: 100px;
+} */
+section{
+    margin-top: 3vh;
+}
+section p{
+    word-wrap: break-word;
+}
+section p span{
+    float :right;
+    /* cursor: pointer; */
+}
+.taskStatus{
+    color:rgb(196, 135, 135);
+}
+
+.edit{
+    font-size: large;
+}
+#editRemove{
+    color: rgb(240, 114, 114);
+    font-size: large;
+    border: 0ch;
+}
+#editSave{
+    color: rgb(99, 255, 8);
+    font-size: large;
+    border: 0ch;
+}
+
+
+/* For smaller screens */
+@media only screen and (max-width: 740px) {
+    main{
+        width: 80vw;
+        margin: 3vh 0 10vh 0;
+        padding: 2vh 5vw 10vh 5vw;
+    }
+    .inputTitle{
+        width: 200px;
+    }
+    section{
+        width: 340px;
+    }
+
+}
