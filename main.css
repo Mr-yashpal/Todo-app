@@ -29,10 +29,9 @@ section{
     /* height: 250px; */
     border:0px solid;
     border-radius: 21px;
-    padding: 2vh 2vw 2vh 2vw;
+    padding: 2vh 2vw 4vh 2vw;
     background-color: white;
     font-size: 25px;
-
 }
 #addTodo{
     width:60px;
@@ -76,6 +75,7 @@ section{
 } */
 section{
     margin-top: 3vh;
+    /* display: flex; */
 }
 section p{
     word-wrap: break-word;
@@ -101,7 +101,15 @@ section p span{
     font-size: large;
     border: 0ch;
 }
-
+.visiblity{
+    display: none;
+}
+.visiblityNone{
+    display: none;
+}
+.visiblityBlock{
+    display: block;
+}
 
 /* For smaller screens */
 @media only screen and (max-width: 740px) {

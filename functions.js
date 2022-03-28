@@ -1,197 +1,230 @@
 if (typeof (Storage) !== "undefined") {
-    // // var tag = document.createElement("p");
-    // // var text = document.createTextNode("Tutorix is the best e-learning platform");
-    // // tag.appendChild(text);
-    // // var element = document.getElementById("new");
-    // // element.appendChild(tag);
+    if (!localStorage.getItem("data")) {
+        let todoData = [];
+        localStorage.setItem("data", JSON.stringify(todoData));
+    }
+    else {
+        var todoData = JSON.parse(localStorage.getItem("data"));
+    }
+    if (!localStorage.getItem('completedData')) {
+        const completedItems = [];
+        localStorage.setItem("completedData", JSON.stringify(completedItems));
+    }
+    else {
+        const completedItems = JSON.parse(localStorage.getItem('completedData'));
+    }
+    if (!localStorage.getItem("index") || todoData.length < 1) {
+        localStorage.setItem("index", "0");
+    }
 
-    var todoData = [];
-    if (localStorage.getItem("data"))
-        todoData = JSON.parse(localStorage.getItem("data"));
-
-    // console.log(localStorage.getItem("data"));
-    // console.log(JSON.parse(localStorage.getItem("data")));
-
-    let addTodoSection = document.querySelector("#addTodo")
+    var addTodoSection = document.querySelector("#addTodo")
     addTodoSection.addEventListener("click", function (event) {
+        var index = JSON.parse(localStorage.getItem("index"));
+        var todoData = JSON.parse(localStorage.getItem("data"));
+
         event.preventDefault();
         var inputTitle = document.getElementById("inputValue");
+        inputTitle.value.trim();
 
-        if (inputTitle.value != '') {
+        if (inputTitle.value != '' && inputTitle.value != ' ') {
             todoData.push(inputTitle.value);
-            console.log(todoData);//
             localStorage.setItem("data", JSON.stringify(todoData));
             inputTitle.value = "";
         }
-        // window.location.reload();
+        localStorage.setItem("index", ++index);
         updateUi();
-
     }, false);
 
     function updateUi() {
         const items = JSON.parse(localStorage.getItem('data'));
+        const completedItems = JSON.parse(localStorage.getItem('completedData'));
 
+        var index = 0;
+        var todoTitels = document.getElementById('todoTitels')
         todoTitels.innerHTML = '';
-        // console.log(todoTitels);
-        // console.log("updating UI",todoTitels.innerHTML)
-        if (todoData) {
+        if (items) {
             items.forEach(title => {
                 const newSection = document.createElement("section");
-                const newP = document.createElement("p");
-                newSection.appendChild(newP);
-                newP.innerText = title;
-                const newSpan1 = document.createElement("span");
-                const newButton1 = document.createElement("button");
-                newButton1.setAttribute("class", "material-icons iconEdit")
-                newButton1.setAttribute("onclick", "editTitle(event)");
-                newButton1.innerText = "edit_note";
-                newSpan1.appendChild(newButton1);
-                newP.appendChild(newSpan1);
+                newSection.setAttribute("id", `s${index}`);
 
-                const newButton2 = document.createElement("button");
+                const p1 = document.createElement("p");
+                p1.setAttribute("id", `p1${index}`);
+                newSection.appendChild(p1);
+                p1.innerText = title;
+
+                const p2 = document.createElement("p");
+                newSection.appendChild(p2);
+
+                const newSpan1 = document.createElement("span");
+                const checkboxTask = document.createElement("input");
+                checkboxTask.setAttribute("id", `c${index}`);
+                checkboxTask.setAttribute("type", "checkbox");
+                checkboxTask.setAttribute("class", "checkboxStatus");
+                checkboxTask.setAttribute("onclick", "checkToComplete(event)");
+                newSpan1.appendChild(checkboxTask);
+
+                if (completedItems.includes(title)) {
+                    p1.innerText = '';
+                    const del = document.createElement("del");
+                    del.innerText = title;
+                    p1.appendChild(del);
+                    checkboxTask.checked = true;
+                }
+
                 const newSpan2 = document.createElement("span");
+                const editButton = document.createElement("button");
+                editButton.setAttribute("id", `e${index}`);
+                editButton.setAttribute("class", "material-icons iconEdit")
+                editButton.setAttribute("onclick", "editTitle(event)");
+                editButton.innerText = "edit_note";
+                newSpan2.appendChild(editButton);
+                p2.appendChild(newSpan1);
+                p2.appendChild(newSpan2);
+
                 const newSpan3 = document.createElement("span");
-                newSpan3.innerText = "incomplete";
-                newSpan3.setAttribute("class", "taskStatus");
-                newButton2.setAttribute("class", "material-icons iconDelet")
-                newButton2.setAttribute("onclick", "deleteParent(event)");
-                newButton2.innerText = "delete";
-                newSpan2.appendChild(newButton2);
-                newP.appendChild(newSpan2);
-                newP.appendChild(newSpan3);
+                const deleteButton = document.createElement("button");
+                deleteButton.setAttribute("id", `d${index}`);
+                deleteButton.setAttribute("class", "material-icons iconDelet")
+                deleteButton.setAttribute("onclick", "deleteParent(event)");
+                deleteButton.innerText = "delete";
+                newSpan3.appendChild(deleteButton);
+                p2.appendChild(newSpan3);
                 todoTitels.appendChild(newSection);
-                // newSection.setAttribute("id", `id${index}`);
+
+                // editForm functionality form here.
+                const newForm = document.createElement("form");
+                newForm.setAttribute("onsubmit", "handleSubmit(event)");
+                newForm.setAttribute("class", "visiblity");
+                newForm.setAttribute("id", `editForm${index}`);
+
+
+                const newlabel = document.createElement("label");
+                newlabel.setAttribute("for", "title");
+
+                const newInput = document.createElement("input");
+                newInput.setAttribute("id", `editValue${index}`);
+                newInput.setAttribute("type", "text");
+                newInput.setAttribute("class", "edit");
+                newInput.setAttribute("name", "title");
+                newInput.setAttribute("value", title);
+
+                const saveButton = document.createElement("button");
+                saveButton.setAttribute("type", "submit");
+                saveButton.setAttribute("id", `editSave${index}`);
+                saveButton.innerText = "Save";
+
+                newForm.appendChild(newlabel);
+                newForm.appendChild(newInput);
+                newForm.appendChild(saveButton);
+                newSection.appendChild(newForm);
+                index++;
             });
         }
+    }
 
+    function checkToComplete(event) {
+        let cid = event.target.id;
+        let checkboxElement = document.getElementById(cid);
+        let p1id = `p1${cid.split("c")[1]}`;
+        let pElement = document.getElementById(p1id);
+        let getTitle = pElement.innerText;
+
+        if (!localStorage.getItem("completedData"))
+            var completedItems = [];
+        else {
+            var completedItems = JSON.parse(localStorage.getItem("completedData"));
+        }
+
+        if (checkboxElement.checked == true) {
+            pElement.innerText = '';
+            const del = document.createElement("del");
+            del.innerText = getTitle;
+            pElement.appendChild(del);
+
+            completedItems.push(getTitle);
+            localStorage.setItem("completedData", JSON.stringify(completedItems));
+        }
+        else {
+            pElement.innerText = getTitle;
+
+            function match(title) {
+                return title != getTitle;
+            }
+
+            function removeCompletedTitle() {
+                let updateCompletedItems = completedItems.filter(match);
+                localStorage.setItem("completedData", JSON.stringify(updateCompletedItems));
+            }
+            removeCompletedTitle();
+        }
     }
 
     function deleteParent(event) {
-        event.preventDefault();
-        let removeTitle = event.target.parentNode.parentNode.innerText.split("\n")[0];
+        let did = event.target.id;
+        let index = did.split("d")[1];
+        let sectionid = `s${index}`;
+        let sectionElement = document.getElementById(sectionid);
+
+        let p1id = `p1${index}`;
+        let pElement = document.getElementById(p1id);
+        let getTitle = pElement.innerText;
+
         let todoData = JSON.parse(localStorage.getItem("data"));
-        todoData.splice(removeTitle, 1);
-        localStorage.setItem("data", JSON.stringify(todoData));
-        updateUi();
-        // window.location.reload()
-        // event.target.parentNode.parentNode.parentNode.remove();
-        // localStorage.removeItem(`${event.target.parentNode.parentNode.parentNode.id.split("id")[1]}`);
+
+        function match(title) {
+            return title != getTitle;
+        }
+
+        function removeTitle() {
+            let updateTodoData = todoData.filter(match);
+
+            localStorage.setItem("data", JSON.stringify(updateTodoData));
+            sectionElement.remove();
+        }
+        removeTitle();
     }
 
     function editTitle(event) {
-        event.preventDefault();
-        // console.log(event.target.parentNode.parentNode.innerText);
-        // console.log(event.target.parentNode.parentNode.parentNode.id.split("id")[1]);
-        let prevValue = event.target.parentNode.parentNode.innerText.split("\n")[0];
-        // document.querySelector("#inputValue").value = prevValue;
-        event.target.parentNode.parentNode.innerHTML =
-            `<form onsubmit='handleSubmit(event)'>
-             <label for="title" class=""></label>
-             <input id="editValue" tupe="text" class="edit" name="title" value=${prevValue}>
-             <button type="submit" id="editSave">Save</button>
-         </form>`
-         let todoData = JSON.parse(localStorage.getItem("data"));
-         todoData.splice(prevValue, 1);
-         localStorage.setItem("data", JSON.stringify(todoData));
-        // event.target.parentNode.parentNode.innerText.split("\n")[0] = document.querySelector("#inputValue").value;
-        // document.getElementById("#inputValue").value= "lol";
-        // console.log(event.target.parentNode.parentNode.parentNode.id.split("id")[1]);
-        // inputTitle.value =event.target.parentNode.innerText.split("\n")[0];
-        // event.target.parentNode.parentNode.remove();
-        // localStorage.removeItem(`${event.target.parentNode.parentNode.parentNode.id.split("id")[1]}`);
-        // const newP = document.createElement("p");
-        // newSection.appendChild(newP);
-        // newP.innerText = title;
-    }
-    function handleSubmit(event){
-        event.preventDefault();
-        if (document.querySelector("#editSave")) {
-            let editSave = document.querySelector("#editSave")
-            editSave.addEventListener("click", function (event) {
-                console.log(event)
-                // event.preventDefault();
-                let editTitleValue = document.getElementById("editValue");
-    
-                // if (editTitle.value != '') {
+        let eid = event.target.id;
+        let index = eid.split("e")[1];
+        let sectionid = `s${index}`;
+        let sectionElement = document.getElementById(sectionid);
+
+        let p1id = `p1${index}`;
+        let pElement = document.getElementById(p1id);
+        let oldValue = pElement.innerText;
+        pElement.innerText = '';
+        let editForm = document.getElementById(`editForm${index}`);
+        editForm.style.display = "block";
+
+
+        let savetitle = document.querySelector(`#editSave${index}`)
+        savetitle.addEventListener("click", function (event) {
+            event.preventDefault();
+            const newTitle = document.getElementById(`editValue${index}`);
+            let newValue = newTitle.value;
+
+            pElement.innerText = newValue;
+            editForm.style.display = "none";
+
+            function editTitle() {
                 let todoData = JSON.parse(localStorage.getItem("data"));
-                todoData.push(editValue.value);
-                console.log(editValue.value);//
-                console.log(editTitleValue.value);//
-                // todoData.splice(removeTitle, 1);
+
+
+                todoData.forEach(replaceTitle, index);
+                function replaceTitle(value) {
+                    if (value == oldValue) {
+                        todoData[index] = newValue;
+                    }
+                }
 
                 localStorage.setItem("data", JSON.stringify(todoData));
-                // editValue.value = "";
-                // }
-                // else {
-                //     console.log(event.target.parentNode.parentNode);
-                //     event.target.parentNode.parentNode.remove();
-                // }
-                // window.location.reload();
-                updateUi();
-    
-            }, false);
-        }
+            }
+            editTitle();
+
+        }, false);
     }
-
-
-    // let editRemove = document.querySelector("#editRemove")
-    // editRemove.addEventListener("click", function (event) {
-
-    // }
     updateUi();
-
-    // window.onload = (event) => {
-    //     // var indexStr;
-    //     for (indexx = 0; indexx <= localStorage.index; indexx++) {
-    //         // indexStr = indexx.toString();
-    //         // console.log(indexx, localStorage.getItem(indexx), localStorage.getItem(localStorage[indexx]) )
-    //         const newSection = document.createElement("section");
-    //         if (localStorage.getItem(indexx) != '' && localStorage.getItem(indexx) != null) {
-    //             // console.log(indexx, localStorage.getItem(indexx))
-
-    //             // newSection.innerHTML =
-    //             // `<p>${localStorage.getItem(indexx)}
-    //             //     <span class="material-icons iconEdit" onclick="editTitle(event)" >edit_note</button></span>
-    //             //     <span class="material-icons iconDelet" onclick="deleteParent(event)" >delete</button></span>
-    //             // </p>`
-    //             const newP = document.createElement("p");
-    //             newSection.appendChild(newP);
-    //             newP.innerText = localStorage.getItem(indexx);
-    //             const newSpan1 = document.createElement("span");
-    //             const newButton1 = document.createElement("button");
-    //             newButton1.setAttribute("class", "material-icons iconEdit")
-    //             newButton1.setAttribute("onclick", "editTitle(event)");
-    //             newButton1.innerText = "edit_note";
-    //             newSpan1.appendChild(newButton1);
-    //             newP.appendChild(newSpan1);
-
-    //             const newButton2 = document.createElement("button");
-    //             const newSpan2 = document.createElement("span");
-    //             newButton2.setAttribute("class", "material-icons iconDelet")
-    //             newButton2.setAttribute("onclick", "deleteParent(event)");
-    //             newButton2.innerText = "delete";
-    //             newSpan2.appendChild(newButton2);
-    //             newP.appendChild(newSpan2);
-
-
-    //             document.getElementById("main").appendChild(newSection);
-    //             newSection.setAttribute("id", `id${indexx}`);
-    //         }
-    //     }
-    // };
-
-
-    // document.querySelector(".icon").addEventListener("click", function (event) {
-
-    //     console.log()
-
-    // }
-
-
-
-
-
-
 }
 else {
     alert("Sorry! No Web Storage support..")
