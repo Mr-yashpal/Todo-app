@@ -1,6 +1,16 @@
 image: ubantu:latest
 stages:
-  - deploy
+  - "compile"
+  - "test"
+
+compile:
+  stage: "compile"
+  script: "echo compile"
+
+test:
+  stage: "test"
+  script: "echo test"
+
 
 pages:
   stages: deploy
